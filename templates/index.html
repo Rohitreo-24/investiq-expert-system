@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InvestIQ — Intelligent Investment Decision System</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C97A;
+    --gold-dim: #8B6E2A;
+    --obsidian: #0A0A0F;
+    --deep: #0F0F1A;
+    --panel: #13131F;
+    --panel-light: #1A1A2E;
+    --border: rgba(201,168,76,0.15);
+    --border-bright: rgba(201,168,76,0.4);
+    --text: #E8E0D0;
+    --text-dim: #8A8070;
+    --text-muted: #4A4540;
+    --green: #4CAF76;
+    --red: #CF6679;
+    --blue: #5B8FD4;
+    --success: rgba(76,175,118,0.1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--obsidian);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 20%, rgba(201,168,76,0.04) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 80%, rgba(91,143,212,0.04) 0%, transparent 60%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 80px,
+        rgba(201,168,76,0.015) 80px,
+        rgba(201,168,76,0.015) 81px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 80px,
+        rgba(201,168,76,0.015) 80px,
+        rgba(201,168,76,0.015) 81px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 20s ease-in-out infinite;
+  }
+  .orb-1 { width: 400px; height: 400px; background: rgba(201,168,76,0.05); top: -100px; left: -100px; animation-delay: 0s; }
+  .orb-2 { width: 300px; height: 300px; background: rgba(91,143,212,0.05); bottom: -50px; right: -50px; animation-delay: -7s; }
+  .orb-3 { width: 200px; height: 200px; background: rgba(201,168,76,0.03); top: 50%; left: 50%; animation-delay: -14s; }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 30px) scale(0.95); }
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 32px 48px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-mark {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--obsidian);
+    box-shadow: 0 0 30px rgba(201,168,76,0.3);
+  }
+
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .logo-sub {
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: -2px;
+  }
+
+  .header-badges {
+    display: flex;
+    gap: 10px;
+  }
+
+  .badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .badge-fol { border-color: rgba(201,168,76,0.3); color: var(--gold); background: rgba(201,168,76,0.05); }
+  .badge-ai { border-color: rgba(91,143,212,0.3); color: var(--blue); background: rgba(91,143,212,0.05); }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 64px 48px 48px;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border: 1px solid var(--border-bright);
+    border-radius: 20px;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+    animation: fadeDown 0.8s 0.1s ease both;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .hero-desc {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 560px;
+    margin: 0 auto;
+    line-height: 1.7;
+    font-weight: 300;
+    animation: fadeDown 0.8s 0.2s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── MAIN LAYOUT ─── */
+  .main {
+    position: relative;
+    z-index: 10;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px 80px;
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  /* ─── FORM PANEL ─── */
+  .form-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: sticky;
+    top: 28px;
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-header {
+    padding: 28px 32px 24px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(201,168,76,0.06), transparent);
+  }
+
+  .form-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold-light);
+    margin-bottom: 4px;
+  }
+
+  .form-header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  .form-body { padding: 28px 32px; }
+
+  .field {
+    margin-bottom: 22px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  /* Age Slider */
+  .age-display {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .age-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .age-label { font-size: 14px; color: var(--text-muted); }
+
+  input[type=range] {
+    width: 100%;
+    height: 4px;
+    background: var(--panel-light);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+  }
+
+  input[type=range]::-webkit-slider-track {
+    height: 4px;
+    background: linear-gradient(to right, var(--gold) var(--pct, 0%), var(--panel-light) var(--pct, 0%));
+    border-radius: 2px;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--panel);
+    box-shadow: 0 0 10px rgba(201,168,76,0.5);
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+  /* Option Buttons */
+  .options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .opt {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 8px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel-light);
+    color: var(--text-dim);
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .opt::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .opt span { position: relative; z-index: 1; }
+
+  .opt:hover {
+    border-color: rgba(201,168,76,0.3);
+    color: var(--gold-light);
+  }
+
+  .opt.active {
+    border-color: var(--gold);
+    color: var(--obsidian);
+    font-weight: 600;
+  }
+
+  .opt.active::before { opacity: 1; }
+
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dim));
+    border: none;
+    border-radius: 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--obsidian);
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(201,168,76,0.4);
+  }
+
+  .submit-btn:hover::after { opacity: 0.08; }
+  .submit-btn:active { transform: translateY(0); }
+
+  .submit-btn.loading {
+    pointer-events: none;
+    opacity: 0.8;
+  }
+
+  .btn-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0,0,0,0.3);
+    border-top-color: var(--obsidian);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── RESULTS PANEL ─── */
+  .results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: fadeUp 0.8s 0.4s ease both;
+  }
+
+  /* Empty state */
+  .empty-state {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .empty-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    filter: grayscale(0.5);
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .empty-state h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  /* Card base */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .card:hover { border-color: var(--border-bright); }
+
+  .card-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold-light);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-body { padding: 24px 28px; }
+
+  /* Frame Section */
+  .frame-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .frame-slot {
+    background: var(--panel-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+    transition: all 0.3s;
+    animation: slotIn 0.5s ease both;
+  }
+
+  .frame-slot:hover {
+    border-color: var(--border-bright);
+    transform: translateY(-3px);
+  }
+
+  @keyframes slotIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .slot-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .slot-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gold);
+  }
+
+  /* FOL Rules */
+  .rule-item {
+    padding: 16px 20px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    background: var(--panel-light);
+    transition: all 0.3s;
+    animation: ruleIn 0.5s ease both;
+    cursor: default;
+  }
+
+  .rule-item:hover {
+    border-color: rgba(76,175,118,0.4);
+    transform: translateX(4px);
+  }
+
+  @keyframes ruleIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .rule-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .rule-badge {
+    padding: 3px 10px;
+    background: rgba(76,175,118,0.15);
+    border: 1px solid rgba(76,175,118,0.3);
+    border-radius: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .rule-icon { font-size: 18px; }
+
+  .rule-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .fired-tag {
+    padding: 2px 10px;
+    background: rgba(76,175,118,0.1);
+    border-radius: 20px;
+    font-size: 11px;
+    color: var(--green);
+    border: 1px solid rgba(76,175,118,0.2);
+  }
+
+  .rule-fol {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gold-dim);
+    margin-bottom: 6px;
+    padding: 8px 12px;
+    background: rgba(201,168,76,0.04);
+    border-radius: 8px;
+    border-left: 2px solid var(--gold-dim);
+  }
+
+  .rule-why {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-style: italic;
+    padding-left: 4px;
+  }
+
+  /* Recommendations */
+  .recs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .rec-item {
+    background: linear-gradient(135deg, rgba(201,168,76,0.08), rgba(201,168,76,0.02));
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 14px;
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.3s;
+    animation: recIn 0.6s ease both;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .rec-item:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(201,168,76,0.15);
+  }
+
+  .rec-item.loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .rec-item .loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(201,168,76,0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: none;
+  }
+
+  .rec-item.loading .loading-spinner {
+    display: block;
+  }
+
+  .rec-item.loading .rec-icon,
+  .rec-item.loading .rec-name {
+    opacity: 0.3;
+  }
+
+  @keyframes recIn {
+    from { opacity: 0; transform: scale(0.7) rotate(-5deg); }
+    to { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  .rec-icon { font-size: 28px; margin-bottom: 10px; }
+  .rec-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gold-light);
+    line-height: 1.3;
+  }
+
+  /* AI Allocation Section */
+  .ai-section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .ai-header {
+    padding: 20px 28px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(91,143,212,0.06), transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ai-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #7BAAE0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ai-streaming-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(91,143,212,0.3);
+    background: rgba(91,143,212,0.08);
+    font-size: 11px;
+    color: var(--blue);
+    letter-spacing: 1px;
+  }
+
+  .ai-streaming-badge .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--blue);
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  .ai-body {
+    padding: 28px;
+  }
+
+  #ai-output {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text);
+    white-space: pre-wrap;
+    min-height: 40px;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 14px;
+    background: var(--blue);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* ─── STEP PROGRESS ─── */
+  .step-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 0 48px 40px;
+    position: relative;
+    z-index: 10;
+    margin-top: -10px;
+  }
+
+  .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    max-width: 120px;
+  }
+
+  .step-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: all 0.4s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step.done .step-dot {
+    background: rgba(76,175,118,0.2);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .step.active .step-dot {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+
+  .step-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .step.active .step-label, .step.done .step-label { color: var(--text-dim); }
+
+  .step-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 22px;
+    transition: background 0.4s;
+    max-width: 80px;
+  }
+
+  .step-line.done { background: rgba(76,175,118,0.3); }
+
+  /* ─── MODAL ─── */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 15, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal.show {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal-content {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    max-width: 600px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, rgba(91,143,212,0.06), transparent);
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel-light);
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    border-color: var(--red);
+    color: var(--red);
+    transform: scale(1.05);
+  }
+
+  .modal-body {
+    padding: 28px;
+    max-height: calc(80vh - 100px);
+    overflow-y: auto;
+  }
+
+  .modal-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .modal-body::-webkit-scrollbar-track {
+    background: var(--panel-light);
+  }
+
+  .modal-body::-webkit-scrollbar-thumb {
+    background: var(--border-bright);
+    border-radius: 3px;
+  }
+
+  .instrument-explanation {
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .instrument-explanation h4 {
+    color: var(--gold-light);
+    margin: 20px 0 10px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .instrument-explanation h4:first-child {
+    margin-top: 0;
+  }
+
+  .instrument-explanation p {
+    margin-bottom: 12px;
+  }
+
+  .instrument-explanation ul {
+    margin: 10px 0;
+    padding-left: 20px;
+  }
+
+  .instrument-explanation li {
+    margin-bottom: 6px;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .main { grid-template-columns: 1fr; }
+    .form-panel { position: static; }
+    header { padding: 20px 24px 0; }
+    .hero { padding: 40px 24px 32px; }
+    .main { padding: 0 24px 60px; }
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    padding: 14px 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    z-index: 100;
+    transform: translateX(120%);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 300px;
+  }
+
+  .toast.show { transform: translateX(0); }
+  .toast.error { border-color: rgba(207,102,121,0.4); }
+  .toast.success { border-color: rgba(76,175,118,0.4); }
+
+  /* ─── NUMBER TICKER ─── */
+  .ticker {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
+</style>
+</head>
+<body>
+
+<!-- Background orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">I</div>
+    <div>
+      <div class="logo-text">InvestIQ</div>
+      <div class="logo-sub">Expert Decision System</div>
+    </div>
+  </div>
+  <div class="header-badges">
+    <span class="badge badge-fol">FOL Engine</span>
+    <span class="badge badge-ai">AI-Powered</span>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-tag">Intelligent Investment Analysis</div>
+  <h1>Your Portfolio,<br><span>Precisely Engineered</span></h1>
+  <p class="hero-desc">Frame-based profiling meets First-Order Logic inference with AI-enhanced portfolio allocation.</p>
+</div>
+
+<!-- Step Bar -->
+<div class="step-bar">
+  <div class="step active" id="step-1">
+    <div class="step-dot">1</div>
+    <div class="step-label">Profile</div>
+  </div>
+  <div class="step-line" id="line-1"></div>
+  <div class="step" id="step-2">
+    <div class="step-dot">2</div>
+    <div class="step-label">Inference</div>
+  </div>
+  <div class="step-line" id="line-2"></div>
+  <div class="step" id="step-3">
+    <div class="step-dot">3</div>
+    <div class="step-label">Analysis</div>
+  </div>
+  <div class="step-line" id="line-3"></div>
+  <div class="step" id="step-4">
+    <div class="step-dot">✓</div>
+    <div class="step-label">Portfolio</div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Form Panel -->
+  <div class="form-panel">
+    <div class="form-header">
+      <h2>Investor Profile Frame</h2>
+      <p>Complete all slots to initialize the inference engine</p>
+    </div>
+    <div class="form-body">
+
+      <!-- Age -->
+      <div class="field">
+        <label>Age</label>
+        <div class="age-display">
+          <div class="age-num" id="age-val">30</div>
+          <div class="age-label">years old</div>
+        </div>
+        <input type="range" id="age-slider" min="18" max="80" value="30"
+          oninput="updateAge(this.value)">
+      </div>
+
+      <!-- Income -->
+      <div class="field">
+        <label>Income Level</label>
+        <div class="options">
+          <button class="opt" onclick="select(this,'income','low')"><span>💼 Low</span></button>
+          <button class="opt" onclick="select(this,'income','medium')"><span>💼 Medium</span></button>
+          <button class="opt" onclick="select(this,'income','high')"><span>💼 High</span></button>
+        </div>
+      </div>
+
+      <!-- Risk -->
+      <div class="field">
+        <label>Risk Preference</label>
+        <div class="options">
+          <button class="opt" onclick="select(this,'risk','low')"><span>🛡️ Low</span></button>
+          <button class="opt" onclick="select(this,'risk','medium')"><span>⚖️ Medium</span></button>
+          <button class="opt" onclick="select(this,'risk','high')"><span>🎯 High</span></button>
+        </div>
+      </div>
+
+      <!-- Duration -->
+      <div class="field">
+        <label>Investment Duration</label>
+        <div class="options">
+          <button class="opt" onclick="select(this,'duration','short')"><span>⚡ Short</span></button>
+          <button class="opt" onclick="select(this,'duration','medium')"><span>📅 Medium</span></button>
+          <button class="opt" onclick="select(this,'duration','long')"><span>🌱 Long</span></button>
+        </div>
+      </div>
+
+      <!-- Goal -->
+      <div class="field">
+        <label>Investment Goal</label>
+        <div class="options">
+          <button class="opt" onclick="select(this,'goal','wealth')"><span>💎 Wealth</span></button>
+          <button class="opt" onclick="select(this,'goal','retire')"><span>🏖️ Retire</span></button>
+          <button class="opt" onclick="select(this,'goal','short_term')"><span>⚡ Short-term</span></button>
+        </div>
+      </div>
+
+      <button class="submit-btn" id="submit-btn" onclick="runAnalysis()">
+        <div class="btn-inner">
+          <div class="spinner" id="spinner"></div>
+          <span id="btn-text">⚡ Analyze My Portfolio</span>
+        </div>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="results-panel" id="results-panel">
+    <div class="empty-state">
+      <div class="empty-icon">🔬</div>
+      <h3>Awaiting Profile Data</h3>
+      <p>Complete your investor profile to initialize<br>the FOL inference engine</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Instrument Explanation Modal -->
+<div class="modal" id="instrument-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span id="modal-icon">📊</span>
+        <span id="modal-title-text">Investment Details</span>
+      </div>
+      <button class="modal-close" onclick="closeInstrumentModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="instrument-explanation" id="instrument-explanation">
+        Loading explanation...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const state = { age: 30, income: null, risk: null, duration: null, goal: null };
+
+  function updateAge(v) {
+    state.age = parseInt(v);
+    document.getElementById('age-val').textContent = v;
+    const pct = ((v - 18) / (80 - 18)) * 100;
+    document.getElementById('age-slider').style.setProperty('--pct', pct + '%');
+  }
+  updateAge(30);
+
+  function select(btn, field, val) {
+    state[field] = val;
+    btn.closest('.options').querySelectorAll('.opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function showToast(msg, type = 'error') {
+    const t = document.getElementById('toast');
+    t.className = `toast ${type}`;
+    t.textContent = (type === 'error' ? '⚠️ ' : '✅ ') + msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  function setStep(n) {
+    for (let i = 1; i <= 4; i++) {
+      const s = document.getElementById(`step-${i}`);
+      s.classList.remove('active', 'done');
+      if (i < n) s.classList.add('done');
+      else if (i === n) s.classList.add('active');
+    }
+    for (let i = 1; i <= 3; i++) {
+      const l = document.getElementById(`line-${i}`);
+      if (l) l.classList.toggle('done', i < n);
+    }
+  }
+
+  const recIcons = {
+    'Aggressive Growth Portfolio (80-90% Equity)': '🚀',
+    'Growth-Oriented Portfolio (70-80% Equity)': '📈',
+    'Balanced Growth Portfolio (60-70% Equity)': '⚖️',
+    'Moderate Growth Portfolio (50-60% Equity)': '📊',
+    'Conservative Income Portfolio (40-50% Equity)': '🏦',
+    'High-Volatility Growth Stocks & Sector Funds': '🔥',
+    'Diversified Index Funds & Large-Cap Blue Chips': '📉',
+    'Conservative Bonds & Fixed Income': '🏛️',
+    'Liquid Funds & Ultra-Short Term Debt': '💰',
+    'Balanced Hybrid Funds & Corporate Bonds': '⚖️',
+    'Equity Funds & ELSS for Tax Benefits': '🌱',
+    'Multi-Cap Equity Funds & Growth Stocks': '💎',
+    'Retirement Funds & Pension Plans': '🎯',
+    'Safe Fixed Income Instruments': '🏦',
+    'Premium Investment Products & Real Estate': '🏢',
+    'Systematic Investment Plans & Mutual Funds': '📆',
+    'Safe Savings & Government Schemes': '💼',
+    'Aggressive Small-Cap & Mid-Cap Portfolio': '🔥',
+    'Senior Citizen Retirement Portfolio': '👴',
+    'International & Alternative Investment Portfolio': '🌍',
+    'Early Retirement Planning Portfolio': '🏦',
+    'Family Financial Planning Portfolio': '👨‍👩‍👧‍👦',
+    'Balanced Diversified Mutual Fund Portfolio': '📊',
+    // Legacy mappings for backward compatibility
+    'Stocks (Equity)': '📈',
+    'Fixed Deposit': '🏦',
+    'Bonds': '📊',
+    'Pension Fund': '🎯',
+    'Money Market Fund': '💰',
+    'Mutual Funds': '🌐',
+    'Index Funds / ETFs': '📉',
+    'Real Estate Investment': '🏢',
+    'Government Savings Bonds': '🏛️',
+    'Cryptocurrency / High-Growth Stocks': '🚀'
+  };
+
+  function buildResults(data) {
+    const p = document.getElementById('results-panel');
+    p.innerHTML = '';
+
+    // Frame card
+    const frame = data.frame;
+    const frameHTML = `
+      <div class="card" style="animation: fadeUp 0.5s ease both">
+        <div class="card-header">
+          <div class="card-title">
+            🗂️ User Profile Frame
+          </div>
+          <span style="font-size:12px;color:var(--text-muted);font-family:'DM Mono',monospace">5 slots populated</span>
+        </div>
+        <div class="card-body">
+          <div class="frame-grid">
+            ${Object.entries(frame).map(([k, v], i) => `
+              <div class="frame-slot" style="animation-delay:${i*0.08}s">
+                <div class="slot-label">${k}</div>
+                <div class="slot-value">${v}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>`;
+    p.innerHTML += frameHTML;
+
+    // FOL Rules card
+    const rulesHTML = `
+      <div class="card" style="animation: fadeUp 0.5s 0.1s ease both">
+        <div class="card-header">
+          <div class="card-title">
+            ⚡ FOL Inference — Forward Chaining
+          </div>
+          <span style="font-size:12px;color:var(--green);font-family:'DM Mono',monospace">${data.fired_rules.length} rules fired</span>
+        </div>
+        <div class="card-body">
+          ${data.fired_rules.map((r, i) => `
+            <div class="rule-item" style="animation-delay:${i*0.1}s">
+              <div class="rule-top">
+                <span class="rule-badge">${r.rule_id}</span>
+                <span class="rule-icon">${r.icon}</span>
+                <span class="rule-name">${r.recommendation}</span>
+                <span class="fired-tag">✓ FIRED</span>
+              </div>
+              <div class="rule-fol">${r.fol}</div>
+              <div class="rule-why">${r.explanation}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    p.innerHTML += rulesHTML;
+
+    // Recommendations card
+    const recsHTML = `
+      <div class="card" style="animation: fadeUp 0.5s 0.2s ease both">
+        <div class="card-header">
+          <div class="card-title">
+            💎 Recommended Instruments
+          </div>
+          <span style="font-size:12px;color:var(--gold);font-family:'DM Mono',monospace">${data.recommendations.length} instruments</span>
+        </div>
+        <div class="card-body">
+          <div class="recs-grid">
+            ${data.recommendations.map((rec, i) => `
+              <div class="rec-item" style="animation-delay:${i*0.1}s" onclick="explainInstrument('${rec}')">
+                <div class="rec-icon">${recIcons[rec] || '💼'}</div>
+                <div class="rec-name">${rec}</div>
+                <div class="loading-spinner"></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>`;
+    p.innerHTML += recsHTML;
+
+    // AI section placeholder
+    p.innerHTML += `
+      <div class="ai-section" id="ai-section" style="animation: fadeUp 0.5s 0.3s ease both">
+        <div class="ai-header">
+          <div class="ai-title">
+            🤖 AI Portfolio Allocation
+          </div>
+          <div class="ai-streaming-badge">
+            <div class="dot"></div>
+            STREAMING
+          </div>
+        </div>
+        <div class="ai-body">
+          <div id="ai-output"><span class="cursor"></span></div>
+        </div>
+      </div>`;
+  }
+
+  async function runAnalysis() {
+    const { income, risk, duration, goal } = state;
+    if (!income || !risk || !duration || !goal) {
+      showToast('Please complete all profile fields');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btn-text');
+    btn.classList.add('loading');
+    spinner.style.display = 'block';
+    btnText.textContent = 'Analyzing...';
+    setStep(2);
+
+    try {
+      // Step 1: Run inference
+      const res = await fetch('/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(state)
+      });
+      const data = await res.json();
+
+      if (!data.fired_rules.length) {
+        showToast('No rules matched — try different inputs');
+        btn.classList.remove('loading');
+        spinner.style.display = 'none';
+        btnText.textContent = '⚡ Analyze My Portfolio';
+        setStep(1);
+        return;
+      }
+
+      setStep(3);
+      buildResults(data);
+
+      // Step 2: Stream AI allocation with fallback
+      btnText.textContent = 'Generating allocation...';
+      
+      try {
+        await getAIAllocation(data);
+        setStep(4);
+        showToast('Analysis complete!', 'success');
+      } catch (err) {
+        console.error('AI allocation failed:', err);
+        showToast('AI allocation failed. Please try again.', 'error');
+      }
+
+    } catch(err) {
+      showToast('Error: ' + err.message);
+      setStep(1);
+    } finally {
+      btn.classList.remove('loading');
+      spinner.style.display = 'none';
+      btnText.textContent = '⚡ Analyze My Portfolio';
+    }
+  }
+
+  // Global variable to store current analysis data
+  let currentAnalysisData = null;
+
+  // Instrument explanation function
+  async function explainInstrument(instrument) {
+    console.log('explainInstrument called with:', instrument);
+    
+    if (!currentAnalysisData) {
+      console.error('No current analysis data available');
+      showToast('Please run analysis first', 'error');
+      return;
+    }
+
+    console.log('Current analysis data:', currentAnalysisData);
+
+    // Find the clicked recommendation item and add loading state
+    const recItems = document.querySelectorAll('.rec-item');
+    const clickedItem = Array.from(recItems).find(item => 
+      item.querySelector('.rec-name').textContent === instrument
+    );
+    
+    console.log('Clicked item found:', clickedItem);
+    
+    if (clickedItem) {
+      clickedItem.classList.add('loading');
+    }
+
+    try {
+      console.log(`Requesting explanation for: ${instrument}`);
+      
+      const requestData = {
+        instrument: instrument,
+        frame: currentAnalysisData.frame
+      };
+      
+      console.log('Request payload:', requestData);
+      
+      const response = await fetch('/explain_instrument', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestData)
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('Response result:', result);
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      // Show modal with explanation
+      showInstrumentModal(instrument, result.explanation);
+      
+    } catch (error) {
+      console.error('Error getting instrument explanation:', error);
+      console.error('Error stack:', error.stack);
+      showToast('Failed to load instrument details: ' + error.message, 'error');
+    } finally {
+      // Remove loading state
+      if (clickedItem) {
+        clickedItem.classList.remove('loading');
+      }
+    }
+  }
+
+  // Show instrument modal
+  function showInstrumentModal(instrument, explanation) {
+    const modal = document.getElementById('instrument-modal');
+    const modalIcon = document.getElementById('modal-icon');
+    const modalTitle = document.getElementById('modal-title-text');
+    const modalExplanation = document.getElementById('instrument-explanation');
+    
+    // Set modal content
+    modalIcon.textContent = recIcons[instrument] || '💼';
+    modalTitle.textContent = instrument;
+    modalExplanation.innerHTML = formatExplanation(explanation);
+    
+    // Show modal
+    modal.classList.add('show');
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Close instrument modal
+  function closeInstrumentModal() {
+    const modal = document.getElementById('instrument-modal');
+    modal.classList.remove('show');
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
+  }
+
+  // Format explanation text with basic HTML structure
+  function formatExplanation(text) {
+    // Convert newlines to paragraphs
+    let formatted = text.split('\n\n').map(paragraph => {
+      // Check if it's a heading (starts with number and dot)
+      if (/^\d+\./.test(paragraph.trim())) {
+        return `<h4>${paragraph.trim()}</h4>`;
+      }
+      // Check if it's a list item (starts with - or *)
+      else if (/^[-*]\s/.test(paragraph.trim())) {
+        const items = paragraph.trim().split(/[-*]\s/).filter(item => item.trim());
+        const listItems = items.map(item => `<li>${item.trim()}</li>`).join('');
+        return `<ul>${listItems}</ul>`;
+      }
+      // Regular paragraph
+      else {
+        return `<p>${paragraph.trim()}</p>`;
+      }
+    }).join('');
+    
+    return formatted;
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(event) {
+    const modal = document.getElementById('instrument-modal');
+    if (event.target === modal) {
+      closeInstrumentModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeInstrumentModal();
+    }
+  });
+
+  // Update buildResults to store current analysis data
+  const originalBuildResults = buildResults;
+  buildResults = function(data) {
+    currentAnalysisData = data; // Store for instrument explanations
+    return originalBuildResults.call(this, data);
+  };
+
+  // AI Allocation function with streaming and fallback
+  async function getAIAllocation(data) {
+    const aiOut = document.getElementById('ai-output');
+    aiOut.innerHTML = '<span class="cursor"></span>';
+    
+    try {
+      // Try streaming first
+      console.log('Attempting streaming AI allocation...');
+      await streamAIAllocation(data);
+    } catch (streamError) {
+      console.warn('Streaming failed, falling back to non-streaming:', streamError);
+      try {
+        // Fallback to non-streaming
+        console.log('Attempting non-streaming AI allocation...');
+        await nonStreamAIAllocation(data);
+      } catch (nonStreamError) {
+        console.error('Both streaming and non-streaming failed:', nonStreamError);
+        throw new Error('AI allocation failed: ' + nonStreamError.message);
+      }
+    }
+  }
+
+  // Streaming AI allocation
+  async function streamAIAllocation(data) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    try {
+      const streamRes = await fetch('/stream_allocation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          frame: data.frame,
+          recommendations: data.recommendations,
+          fired_rules: data.fired_rules
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!streamRes.ok) {
+        const errorText = await streamRes.text();
+        throw new Error(`HTTP ${streamRes.status}: ${errorText}`);
+      }
+
+      const reader = streamRes.body.getReader();
+      const decoder = new TextDecoder();
+      const aiOut = document.getElementById('ai-output');
+      let aiText = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n');
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            const payload = line.slice(6).trim();
+            if (payload === '[DONE]') break;
+            
+            try {
+              const parsed = JSON.parse(payload);
+              if (parsed.error) {
+                throw new Error(parsed.error);
+              }
+              if (parsed.text) {
+                aiText += parsed.text;
+                aiOut.innerHTML = aiText + '<span class="cursor"></span>';
+                // Scroll the ai section into view smoothly
+                document.getElementById('ai-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            } catch (parseError) {
+              console.warn('Failed to parse streaming response:', parseError, 'Payload:', payload);
+            }
+          }
+        }
+      }
+
+      // Remove cursor when done
+      aiOut.innerHTML = aiText;
+      console.log('Streaming completed successfully');
+
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - AI response took too long');
+      }
+      throw error;
+    }
+  }
+
+  // Non-streaming AI allocation (fallback)
+  async function nonStreamAIAllocation(data) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    try {
+      const response = await fetch('/ai_explain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          frame: data.frame,
+          recommendations: data.recommendations,
+          fired_rules: data.fired_rules
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      const aiOut = document.getElementById('ai-output');
+      aiOut.innerHTML = result.explanation || 'No explanation available.';
+      
+      // Scroll the ai section into view smoothly
+      document.getElementById('ai-section').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      console.log('Non-streaming completed successfully');
+
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Request timeout - AI response took too long');
+      }
+      throw error;
+    }
+  }
+</script>
+</body>
+</html>
