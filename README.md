@@ -26,7 +26,7 @@ It combines:
 
 * Python Flask
 * Groq AI API
-* HTML/CSS/JS
+* HTML
 * FOL Rule Engine
 
 ---
@@ -36,7 +36,7 @@ It combines:
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/investiq.git
+git clone https://github.com/Rohitreo-24/investiq-expert-system
 cd investiq
 ```
 
@@ -56,7 +56,7 @@ This project uses **Groq API**.
 
 You must set your own key.
 
-#### ▶ Windows (PowerShell)
+#### ▶ Windows
 
 ```powershell
 setx GROQ_API_KEY "your_key_here"
